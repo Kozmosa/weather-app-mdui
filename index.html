@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Weather Fetch API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.bootcss.com/mdui/0.4.2/css/mdui.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/mdui/0.4.2/js/mdui.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <style>
+        .footer {
+            position: fixed;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+            height: 50px;
+            background-color: #eee;
+            z-index: 9999;
+        }
+
+        .image {
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body class="mdui-theme-primary-pink">
+    <div class="mdui-toolbar mdui-color-theme">
+        <a href="javascript:;" class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#left-drawer'}"><i class="mdui-icon material-icons">menu</i></a>
+        <span class="mdui-typo-title">Seo Weather</span>
+        <div class="mdui-toolbar-spacer"></div>
+        <a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>
+        <a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">refresh</i></a>
+        <a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">more_vert</i></a>
+    </div>
+
+    <div class="mdui-drawer" id="left-drawer">
+        <ul class="mdui-list">
+            <li>
+                <img class="image" src="card.jpg" />
+            </li>
+            <li class="mdui-list-item mdui-ripple" onclick="window.open('https://github.com/xuyang1638');">
+                <div class="mdui-list-item-content">Author</div>
+            </li>
+            <li class="mdui-list-item mdui-ripple" onclick="window.open('https://github.com/xuyang1638');">
+                <div class="mdui-list-item-avatar"><img src="headimg.png" /></div>
+                <div class="mdui-list-item-content">Xuyang1638</div>
+                <div class="mdui-list-item-text mdui-list-item-one-line">
+                    <span class="mdui-text-color-theme-text">
+                        Github
+                    </span>
+                </div>
+            </li>
+        </ul>
+        <div style="text-align:center;" class="footer">
+            <button class="mdui-btn mdui-ripple mdui-color-theme footer" mdui-drawer-close>
+                CLOSE
+            </button>
+        </div>
+    </div>
+
+    <div class="mdui-container">
+        <div id="viewer">
+            <div class="mdui-card">
+                <div class="mdui-card-media">
+                    <img src="card.jpg" />
+                    <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
+                        <div class="mdui-card-primary">
+                            <h1 class="mdui-card-primary-title" id="cityname">City</h1>
+                            <h2 class="mdui-card-primary-subtitle" id="temp">Temp</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mdui-card-content">
+                <div class="mdui-typo">
+
+                    <!-- Today Information Area -->
+                    <div id="air-quality"></div>
+                    <div id="air-humidity"></div>
+                    <div id="pm2.5"></div>
+
+                    <!-- Tomorrow Information Area -->
+                    <div id="weather-type"></div>
+                    <div id="sunrise-time"></div>
+                    <div id="sunset-time"></div>
+                    <div id="high-temp"></div>
+                    <div id="low-temp"></div>
+
+                </div>
+            </div>
+            <div class="mdui-card-actions">
+                <button class="mdui-btn mdui-ripple mdui-color-theme" onclick="mdui.snackbar('正在获取最新的天气数据......');getData();">获取天气数据</button>
+                <button class="mdui-btn mdui-ripple mdui-color-theme" onclick="mdui.snackbar('正在更新数据......');getTomorrowData();">查看明天的天气预报</button>
+            </div>
+        </div>
+        <p id="cityname"></p>
+        <p id="temp"></p>
+        <p id="weather"></p>
+    </div>
+    </div>
+
+    <script>
+        function createXHR() {
+            var xhr = null;
+            if (window.XMLHttpRequest) {
+                xhr = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            return xhr;
+        }
+
+        function getData() {
+            var xhr = createXHR();
+            xhr.open('GET', 'http://t.weather.sojson.com/api/weather/city/101240204', true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    //alert(this.responseText);
+                    var data = eval('(' + this.responseText + ')');
+                    var x = document.getElementById('viewer');
+                    document.getElementById('cityname').innerText = data.cityInfo.city;
+                    document.getElementById('temp').innerText = data.data.wendu + "℃";
+                    document.getElementById('high-temp').innerText = "";
+                    document.getElementById('low-temp').innerText = "";
+                    document.getElementById('sunrise-time').innerText = "";
+                    document.getElementById('sunset-time').innerText = "";
+                    document.getElementById('weather-type').innerText = "";
+                    document.getElementById('air-quality').innerText = "空气质量: " + data.data.quality;
+                    document.getElementById('air-humidity').innerText = "空气湿度: " + data.data.shidu;
+                }
+            }
+            xhr.send(null);
+        }
+
+        function getTomorrowData() {
+            var xhr = createXHR();
+            xhr.open('GET', 'http://t.weather.sojson.com/api/weather/city/101240204', true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    //alert(this.responseText);
+                    var data = eval('(' + this.responseText + ')');
+                    var x = document.getElementById('viewer');
+                    document.getElementById('air-quality').innerHTML = "";
+                    document.getElementById('air-humidity').innerHTML = "";
+                    document.getElementById('cityname').innerText = data.cityInfo.city;
+                    document.getElementById('high-temp').innerText = "最高温度: " + data.data.forecast[0].high;
+                    document.getElementById('low-temp').innerText = "最低温度: " + data.data.forecast[0].low;
+                    document.getElementById('sunrise-time').innerText = "日出时间: " + data.data.forecast[0].sunrise;
+                    document.getElementById('sunset-time').innerText = "日落时间: " + data.data.forecast[0].sunset;
+                    document.getElementById('weather-type').innerText = "天气: " + data.data.forecast[0].type;
+                    mdui.snackbar("温馨提示: " + data.data.forecast[0].notice);
+                }
+            }
+            xhr.send(null);
+        }
+    </script>
+</body>
+
+</html>
